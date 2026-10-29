@@ -1,13 +1,16 @@
 package ex03;
 
+import java.util.Objects;
+
 // 자바의 모든 class는 기본으로 object class 상속받는다
 class A extends Object {}   
 // == class A {}
-// equals()   : 객체 비교
+// equals()   : 객체 비교 >>> 문자열을 비교하면 값을 비교해도 재정의된다. 문자열이 아닌 일반객체에서는 이퀄스를 사용해도 주소로 비교한다. String만 비교하도록! 
 // toString() : 객체이름을 출력할 때
 // hashCode() : 객체의 인스턴스의 heap상의 위치를 출력 
 // getClass() : 클래스 정보를 가지고 온다
 
+    // this          super
 class Member extends Object {
 	// Fields
 	private String name;
@@ -17,10 +20,12 @@ class Member extends Object {
 	// Constructor
 	// alt+shift+s 눌러서 Constructor 생성
 	public Member() {    // 기본생성자 
-		
+		System.out.println("Member class 입니다.");		
 	}
 	
 	public Member(String name, String phone) {  // 인자가 있는 생성자
+		this(); // 기본생성자를 호출한다
+		// super(); // super object(), 부모클래스의 기본생성자인 super를 호출한다 
 		this.name = name;
 		this.phone = phone;
 	}
@@ -48,11 +53,40 @@ class Member extends Object {
 		System.out.println("이름: " + name +" 전화: " + phone );
 	}
 
+
+	//override 
+	@Override
+	public String toString() {   // toString을 고쳐서 쓸꺼야!   override 전과 후를 비교해볼것! 이렇게 하면 m == m1 이렇게 인식됨 
+		return "Member [name=" + name + ", phone=" + phone + "]";
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(name, phone);
+	}
+
+	@Override // m1.equals(m) 
+ 	public boolean equals(Object obj) {  // m이 Obj임. 왜 Member가 아닌 Object인가? 
+		if (this == obj)                 
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Member other = (Member) obj;
+		return Objects.equals(name, other.name) && Objects.equals(phone, other.phone);
+	}	
+	
 }
 
 public class TestMember {
 
 	public static void main(String[] args) {
+		
+		Member m0 = new Member();
+		m0.setName("이승우");
+		m0.info();
+		
 		Member m1 = new Member("손흥민", "010-0000-0000");
 		Member m2 = new Member("안정환", "010-1111-1111");
 		Member m3 = new Member("차범근", "010-2222-2222");
@@ -64,16 +98,15 @@ public class TestMember {
 		// 손흥민의 이름과 전화번호를 찾아줘! 
 		Member m = new Member("손흥민", "010-0000-0000");
 		System.out.println(m1==m); // 다른 사람으로 나옴. 왜냐면 저장된 주소값이 다르므로. 그럼 m1과 m을 같은 사람으로 만들수 없을까? 
-		System.out.println(m1.equals(m)); //
+		System.out.println(m1.equals(m)); // false로 나오는데, equals로 비교 가능하도록 값을 재정의 할 것임. method에서 generate ~~ 하면 됨. 
 		
 		A  a = new A();
 
 		System.out.println("=========================");
-		System.out.println(m1);             //패키지이름, 클래스 이름, 16진수 
+		System.out.println(m1);             //패키지이름, 클래스 이름, 16진수   - override 달기 전 
 		System.out.println(m1.toString());
 		System.out.println(m1.hashCode());
 		System.out.println(m1.getClass()+"\n");
-		
 		System.out.println(m3.hashCode());
 		
 	}
